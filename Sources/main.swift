@@ -3,83 +3,46 @@ import Foundation
 
 import Commander
 
-func gen(node: Node, target: String) -> String {
-  guard case .mapping = node else {
-    fatalError("Invalid yaml")
-  }
-
-  var flattenArray: [(String, [String : String])] = []
-
-  func _flatten(keys: [String], node: Node) {
-
-    if case .mapping(let m) = node {
-
-      m.forEach { m in
-        if m.0 == "l10n" {
-          guard case .mapping(let _m) = m.1 else {
-            fatalError("Something went wrong")
-          }
-
-          let d = _m.reduce([String : String]()) { dic, t in
-            var dic = dic
-            if case .scalar(let v) = t.1 {
-              dic[t.0] = v
-            }
-            return dic
-          }
-
-          flattenArray.append((keys.joined(separator: "."), d))
-        } else {
-          _flatten(keys: keys + [m.0], node: m.1)
-        }
-      }
-    }
-  }
-
-  _flatten(keys: [], node: node)
-
-  print(flattenArray)
-  print(flattenArray.count)
-
-  return flattenArray.map { dic -> String in
-    guard let a = dic.1[target] else {
-      fatalError("missing localized string")
-    }
-    return "\"\(dic.0)\" = \"\(a.replacingOccurrences(of: "\n", with: "\\n"))\";"
-  }
-  .joined(separator: "\n")
-
-}
-
 let commandGroup = Group {
 
-  $0.command("gen", { (input: String, output: String, target: String) in
-    print("input: \(input)")
-    print("output: \(output)")
+  $0.command(
+    "gen",
+    Argument<String>("input", description: "input yaml file path"),
+    Argument<String>("output", description: "output directory"),
+    Argument<String>("target", description: "target language [Base, ja, zh_Hant]"),
+    { input, output, target in
 
-    let data = FileManager.default.contents(atPath: input)!
-    let yamlString = String(data: data, encoding: .utf8)!
-    let node = try! Node(string: yamlString)
+      guard let data = FileManager.default.contents(atPath: input) else {
+        fatalError("Not found file: \(input)")
+      }
 
-    let result = gen(node: node, target: target)
+      guard let yamlString = String(data: data, encoding: .utf8) else {
+        fatalError("")
+      }
 
-    let fileManager = FileManager.default
+      guard let node = try? Node(string: yamlString) else {
+        fatalError("Invalid yaml file")
+      }
 
-    let outputDirectoryURL = URL(fileURLWithPath: output)
-      .appendingPathComponent(target)
+      let result = Generator.gen(node: node, target: target)
 
-    let outputFileURL = outputDirectoryURL.appendingPathComponent("Localizable.strings")
+      let fileManager = FileManager.default
 
-    do {
-      try fileManager.createDirectory(at: outputDirectoryURL, withIntermediateDirectories: true, attributes: [:])
-      let data = result.data(using: .utf8)
-      try data?.write(to: outputFileURL)
-    } catch {
-      print(error)
-      exit(1)
-    }
+      let outputDirectoryURL = URL(fileURLWithPath: output)
+        .appendingPathComponent(target)
 
-    print(result)
+      let outputFileURL = outputDirectoryURL.appendingPathComponent("Localizable.strings")
+
+      do {
+        try fileManager.createDirectory(at: outputDirectoryURL, withIntermediateDirectories: true, attributes: [:])
+        let data = result.data(using: .utf8)
+        try data?.write(to: outputFileURL)
+      } catch {
+        print(error)
+        exit(1)
+      }
+
+      print("Complete! \(target)")
   })
 }
 

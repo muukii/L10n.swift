@@ -35,8 +35,8 @@ App:
 ```
 
 ```sh
-./l10n gen l10n.yaml ./Resorces Base
-./l10n gen l10n.yaml ./Resorces ja 
+$ ./l10n gen l10n.yaml ./Resorces Base
+$ ./l10n gen l10n.yaml ./Resorces ja 
 ```
 
 ## Results
@@ -57,4 +57,13 @@ App:
 "Alert.OK" = "OK";
 "Alert.Cancel" = "Cancel";
 "App" = "Awesome App";
+```
+
+# Installation
+
+```sh
+git clone https://github.com/muukii/L10n.git ./L10n
+cd L10n
+make release
+make install
 ```

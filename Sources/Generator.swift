@@ -8,43 +8,39 @@
 
 import Foundation
 
-import Yams
+import JAYSON
 
 enum Generator {
-  static func gen(node: Node, target: String) -> String {
-    guard case .mapping = node else {
-      fatalError("Invalid yaml")
+  static func gen(json: JAYSON, target: String) throws -> String {
+    guard case .dictionary = json.sourceType else {
+      fatalError("Invalid json")
     }
 
     var flattenArray: [(String, [String : String])] = []
 
-    func _flatten(keys: [String], node: Node) {
+    func _flatten(keys: [String], json: JAYSON) throws {
 
-      if case .mapping(let m) = node {
+      if case .dictionary = json.sourceType {
 
-        m.forEach { m in
-          if m.0 == "l10n" {
-            guard case .mapping(let _m) = m.1 else {
-              fatalError("Something went wrong")
-            }
+        try json.getDictionary().forEach { json in
+          if json.key == "l10n" {
 
-            let d = _m.reduce([String : String]()) { dic, t in
+            let d = try json.value.getDictionary().reduce([String : String]()) { dic, t in
               var dic = dic
-              if case .scalar(let v) = t.1 {
-                dic[t.0] = v
+              if case .string = t.value.sourceType {
+                dic[t.key] = try t.value.getString()
               }
               return dic
             }
-
             flattenArray.append((keys.joined(separator: "."), d))
           } else {
-            _flatten(keys: keys + [m.0], node: m.1)
+            try _flatten(keys: keys + [json.key], json: json.value)
           }
         }
       }
     }
 
-    _flatten(keys: [], node: node)
+    try _flatten(keys: [], json: json)
 
     print(flattenArray)
     print(flattenArray.count)
@@ -56,6 +52,5 @@ enum Generator {
       return "\"\(dic.0)\" = \"\(a.replacingOccurrences(of: "\n", with: "\\n"))\";"
       }
       .joined(separator: "\n")
-    
   }
 }

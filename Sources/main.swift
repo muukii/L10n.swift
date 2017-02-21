@@ -1,6 +1,6 @@
-import Yams
 import Foundation
 
+import JAYSON
 import Commander
 
 let commandGroup = Group {
@@ -16,15 +16,9 @@ let commandGroup = Group {
         fatalError("Not found file: \(input)")
       }
 
-      guard let yamlString = String(data: data, encoding: .utf8) else {
-        fatalError("")
-      }
+      let json = try JAYSON.init(data: data)
 
-      guard let node = try? Node(string: yamlString) else {
-        fatalError("Invalid yaml file")
-      }
-
-      let result = Generator.gen(node: node, target: target)
+      let result = try Generator.gen(json: json, target: target)
 
       let fileManager = FileManager.default
 

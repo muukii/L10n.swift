@@ -10,8 +10,8 @@ import Foundation
 
 import JAYSON
 
-enum Generator {
-  static func gen(json: JAYSON, target: String) throws -> String {
+public enum Generator {
+  public static func gen(json: JAYSON, target: String) throws -> String {
     guard case .dictionary = json.sourceType else {
       fatalError("Invalid json")
     }
@@ -19,30 +19,26 @@ enum Generator {
     var flattenArray: [(String, [String : String])] = []
 
     func _flatten(keys: [String], json: JAYSON) throws {
+      try json.getDictionary().forEach { dictionary in
+        if dictionary.key == "l10n" {
 
-      if case .dictionary = json.sourceType {
-
-        try json.getDictionary().forEach { json in
-          if json.key == "l10n" {
-
-            let d = try json.value.getDictionary().reduce([String : String]()) { dic, t in
-              var dic = dic
-              if case .string = t.value.sourceType {
-                dic[t.key] = try t.value.getString()
-              }
-              return dic
-            }
-            flattenArray.append((keys.joined(separator: "."), d))
-          } else {
-            try _flatten(keys: keys + [json.key], json: json.value)
+          let d = try dictionary.value.getDictionary().reduce([String : String]()) { dic, t in
+            var dic = dic
+            dic[t.key] = try t.value.getString()
+            return dic
           }
+
+          let key = keys.joined(separator: ".")
+          flattenArray.append((key, d))
+          print("key", key, "value", d)
+        } else {
+          try _flatten(keys: keys + [dictionary.key], json: dictionary.value)
         }
       }
     }
 
     try _flatten(keys: [], json: json)
 
-    print(flattenArray)
     print(flattenArray.count)
 
     return flattenArray.map { dic -> String in

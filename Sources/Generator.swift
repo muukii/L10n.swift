@@ -11,7 +11,7 @@ import Foundation
 import JAYSON
 
 public enum Generator {
-  public static func gen(json: JAYSON, target: String) throws -> String {
+  public static func gen(json: JAYSON, target: String, prefix: String) throws -> String {
     guard case .dictionary = json.sourceType else {
       fatalError("Invalid json")
     }
@@ -28,7 +28,7 @@ public enum Generator {
             return dic
           }
 
-          let key = keys.joined(separator: ".")
+          let key = ([prefix] + keys).joined(separator: ".")
           flattenArray.append((key, d))
           print("key", key, "value", d)
         } else {

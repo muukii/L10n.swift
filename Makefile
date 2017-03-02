@@ -13,3 +13,7 @@ run: build
 release: clean
 	@swift build --configuration release
 
+gen_xcode:
+	@swift package generate-xcodeproj
+
+

@@ -3,8 +3,9 @@ import Foundation
 import JAYSON
 import Guaka
 
+let root = Command(usage: "main")
 
-let command = Command(
+let gen = Command(
   usage: "gen",
   shortMessage: "Generate",
   longMessage: nil,
@@ -60,4 +61,24 @@ let command = Command(
     
 }
 
-command.execute()
+let find = Command(
+  usage: "find",
+  shortMessage: "Generate",
+  longMessage: nil,
+  flags: [
+    Flag(shortName: "p", longName: "path", type: String.self, description: "Root path", required: true, inheritable: false),
+    ],
+  example: "",
+  parent: nil,
+  aliases: [],
+  deprecationStatus: .notDeprecated) { f, _ in
+
+    let rootPath = f.get(name: "path", type: String.self)!
+    print(FileManager.default.walk(rootPath: rootPath))
+}
+
+
+root.add(subCommand: gen)
+root.add(subCommand: find)
+
+root.execute()

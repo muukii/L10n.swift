@@ -3,23 +3,25 @@ import Foundation
 import JAYSON
 import Guaka
 
-let i = Flag(shortName: "i", longName: "input", type: String.self, description: "input", required: true, inheritable: false)
-let o = Flag(shortName: "o", longName: "output", type: String.self, description: "output", required: true, inheritable: false)
-let t = Flag(shortName: "t", longName: "target", type: String.self, description: "target", required: true, inheritable: false)
-let p = Flag(shortName: "p", longName: "prefix", type: String.self, description: "prefix", required: false, inheritable: false)
 
 let command = Command(
   usage: "gen",
   shortMessage: "Generate",
   longMessage: nil,
-  flags: [i, o, t, p],
+  flags: [
+    Flag(shortName: "i", longName: "input", type: String.self, description: "input", required: true, inheritable: false),
+    Flag(shortName: "o", longName: "output", type: String.self, description: "output", required: true, inheritable: false),
+    Flag(shortName: "t", longName: "target", type: String.self, description: "target", required: true, inheritable: false),
+    Flag(shortName: "p", longName: "prefix", type: String.self, description: "prefix", required: false, inheritable: false),
+  ],
   example: "",
   parent: nil,
   aliases: [],
   deprecationStatus: .notDeprecated) { (flags, args) in
 
-    let input = flags.get(name: "input", type: String.self)!
-    let output = flags.get(name: "output", type: String.self)!
+    // standardizingPath : ~/ => /Users/Foo/
+    let input = (flags.get(name: "input", type: String.self)! as NSString).standardizingPath
+    let output = (flags.get(name: "output", type: String.self)! as NSString).standardizingPath
     let target = flags.get(name: "target", type: String.self)!
     let prefix = flags.get(name: "prefix", type: String.self) ?? ""
 
@@ -29,9 +31,15 @@ let command = Command(
 
     do {
 
-      let json = try JAYSON.init(data: data)
+      let parser = Parser()
+      let validator = Validator()
+      let stringsGenerator = StringsGenerator(prefix: prefix)
 
-      let result = try Generator.gen(json: json, target: target, prefix: prefix)
+      let strings = try validator.run(
+        strings: try parser.run(jsonData: data)
+      )
+
+      let data = try stringsGenerator.run(strings: strings, target: target)
 
       let fileManager = FileManager.default
 
@@ -42,8 +50,7 @@ let command = Command(
 
 
       try fileManager.createDirectory(at: outputDirectoryURL, withIntermediateDirectories: true, attributes: [:])
-      let data = result.data(using: .utf8)
-      try data?.write(to: outputFileURL)
+      try data.write(to: outputFileURL)
     } catch {
       print(error)
       exit(1)
@@ -54,20 +61,3 @@ let command = Command(
 }
 
 command.execute()
-
-
-//import Commander
-//
-//let commandGroup = Group {
-//
-//  $0.command(
-//    "gen",
-//    Argument<String>("input", description: "input yaml file path"),
-//    Argument<String>("output", description: "output directory"),
-//    Argument<String>("target", description: "target language [Base, ja, zh_Hant]"),
-//    { input, output, target in
-//
-//  })
-//}
-//
-//commandGroup.run()

@@ -32,7 +32,7 @@ final class Parser {
           }
 
           let key = keys.joined(separator: ".")
-          precondition(flattenArray[key] != nil, "\(key) is used twice.")
+          precondition(flattenArray[key] == nil, "\(key) is used twice.")
           flattenArray[key] = d
           print("key", key, "value", d)
         } else {

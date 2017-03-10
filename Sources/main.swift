@@ -46,6 +46,7 @@ let gen = Command(
 
       let outputDirectoryURL = URL(fileURLWithPath: output)
         .appendingPathComponent(target)
+        .appendingPathExtension("lproj")
 
       let outputFileURL = outputDirectoryURL.appendingPathComponent("Localizable.strings")
 

@@ -11,13 +11,22 @@ import JAYSON
 
 final class Parser {
 
+  enum Error: Swift.Error {
+    case invalidJSON
+  }
+
   init() {
 
   }
 
   func run(jsonData: Data) throws -> [String : [String : String]] {
 
-    let json = try JSON(data: jsonData)
+    let json: JSON
+    do {
+      json = try JSON(data: jsonData)
+    } catch {
+      throw Error.invalidJSON
+    }
 
     var flattenArray: [String : [String : String]] = [:]
 

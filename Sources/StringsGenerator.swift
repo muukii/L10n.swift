@@ -26,7 +26,11 @@ final class StringsGenerator {
       guard let a = dic.value[target] else {
         fatalError("missing localized string")
       }
-      return "\"\(dic.0)\" = \"\(a.replacingOccurrences(of: "\n", with: "\\n"))\";"
+
+
+      let key = prefix + "." + dic.0
+
+      return "\"\(key)\" = \"\(a.replacingOccurrences(of: "\n", with: "\\n"))\";"
       }
       .joined(separator: "\n")
 

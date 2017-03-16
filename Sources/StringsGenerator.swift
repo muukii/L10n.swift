@@ -28,7 +28,7 @@ final class StringsGenerator {
       }
 
 
-      let key = prefix + "." + dic.0
+      let key = prefix + dic.0
 
       return "\"\(key)\" = \"\(a.replacingOccurrences(of: "\n", with: "\\n"))\";"
       }

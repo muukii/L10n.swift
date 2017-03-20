@@ -35,12 +35,14 @@ let gen = Command(
       let parser = Parser()
       let validator = Validator()
       let stringsGenerator = StringsGenerator(prefix: prefix)
+      let codeGenerator = CodeGenerator()
 
       let strings = try validator.run(
         strings: try parser.run(jsonData: data)
       )
 
-      let data = try stringsGenerator.run(strings: strings, target: target)
+      let stringsData = try stringsGenerator.run(strings: strings, target: target)
+      let codeData = try codeGenerator.run(strings: strings, target: target)
 
       let fileManager = FileManager.default
 
@@ -52,7 +54,7 @@ let gen = Command(
 
 
       try fileManager.createDirectory(at: outputDirectoryURL, withIntermediateDirectories: true, attributes: [:])
-      try data.write(to: outputFileURL)
+      try stringsData.write(to: outputFileURL)
     } catch {
       print(error)
       exit(1)

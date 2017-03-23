@@ -52,8 +52,8 @@ let gen = Command(
 
       let outputFileURL = outputDirectoryURL.appendingPathComponent("Localizable.strings")
 
-
       try fileManager.createDirectory(at: outputDirectoryURL, withIntermediateDirectories: true, attributes: [:])
+
       try stringsData.write(to: outputFileURL)
     } catch {
       print(error)
@@ -66,7 +66,7 @@ let gen = Command(
 
 let find = Command(
   usage: "find",
-  shortMessage: "Generate",
+  shortMessage: "find",
   longMessage: nil,
   flags: [
     Flag(shortName: "p", longName: "path", type: String.self, description: "Root path", required: true, inheritable: false),
@@ -80,6 +80,21 @@ let find = Command(
     print(FileManager.default.walk(rootPath: rootPath))
 }
 
+let add = Command(
+  usage: "add",
+  shortMessage: "add L10n",
+  longMessage: nil,
+  flags: [
+    Flag(shortName: "p", longName: "path", type: String.self, description: "json path", required: true, inheritable: false),
+    ],
+  example: "",
+  parent: nil,
+  aliases: [],
+  deprecationStatus: .notDeprecated) { f, a in
+
+    let rootPath = f.get(name: "path", type: String.self)!
+    print(FileManager.default.walk(rootPath: rootPath))
+}
 
 root.add(subCommand: gen)
 root.add(subCommand: find)

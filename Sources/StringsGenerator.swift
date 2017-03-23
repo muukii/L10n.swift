@@ -15,9 +15,11 @@ final class StringsGenerator {
   }
 
   let prefix: String
+  let debug: Bool
 
-  init(prefix: String) {
+  init(prefix: String, debug: Bool) {
     self.prefix = prefix
+    self.debug = debug
   }
 
   func run(strings: [String : [String : String]], target: String) throws -> Data {
@@ -27,10 +29,23 @@ final class StringsGenerator {
         fatalError("missing localized string")
       }
 
-
       let key = prefix + dic.0
 
-      return "\"\(key)\" = \"\(a.replacingOccurrences(of: "\n", with: "\\n"))\";"
+      var value: String
+      if debug {
+
+        if a.isEmpty {
+          value = key
+        } else {
+          value = a.replacingOccurrences(of: "\n", with: "\\n")
+        }
+
+      } else {
+        value = a.replacingOccurrences(of: "\n", with: "\\n")
+      }
+
+
+      return "\"\(key)\" = \"\(value)\";"
       }
       .joined(separator: "\n")
 

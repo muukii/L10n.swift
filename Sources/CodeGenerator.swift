@@ -71,8 +71,9 @@ final class CodeGenerator {
       "  }",
       "}",
       ]
-    
 
+    l.append("private class BundleClass {}")
+    
     let result = l.joined(separator: "\n")
     print(result)
     return result.data(using: .utf8)!

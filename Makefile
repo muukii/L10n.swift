@@ -15,3 +15,6 @@ release: clean
 
 gen_xcode:
 	@swift package generate-xcodeproj
+
+docker:
+	@docker run --rm -it --name swift -v $PWD:/local/dev swift:3.0.2 /bin/bash

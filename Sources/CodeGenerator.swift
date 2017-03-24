@@ -10,6 +10,10 @@ import Foundation
 import Regex
 import Guitar
 
+#if os(macOS)
+  typealias RegularExpression = NSRegularExpression
+#endif
+
 final class CodeGenerator {
 
   init() {
@@ -81,7 +85,7 @@ final class CodeGenerator {
 
   func injectNames(source: String) -> [String] {
 
-    let regex = try! NSRegularExpression(pattern: "\\{\\{\\s*(.+?)\\s*\\}\\}", options: [])
+    let regex = try! RegularExpression(pattern: "\\{\\{\\s*(.+?)\\s*\\}\\}", options: [])
     let r = regex.matches(in: source, options: [], range: NSRange(location: 0, length: source.characters.count))
     let s = r.map { a in
       (source as NSString).substring(with: a.rangeAt(1))

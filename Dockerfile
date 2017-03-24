@@ -5,5 +5,5 @@ MAINTAINER muukii <m@muukii.me>
 WORKDIR /local
 ENV BRANCH json
 
-RUN git clone --depth=1 -b $SWIFT_PROTOBUF_TAG https://github.com/muukii/L10n.swift.git
+RUN git clone --depth=1 -b $BRANCH https://github.com/muukii/L10n.swift.git
 

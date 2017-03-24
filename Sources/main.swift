@@ -51,14 +51,21 @@ let gen = Command(
       let fileManager = FileManager.default
 
       let outputDirectoryURL = URL(fileURLWithPath: output)
+
+      let stringsOutputDirURL = outputDirectoryURL
         .appendingPathComponent(target)
         .appendingPathExtension("lproj")
 
-      let outputFileURL = outputDirectoryURL.appendingPathComponent("Localizable.strings")
+      let stringsOutputFileURL = stringsOutputDirURL
+        .appendingPathComponent("Localizable.strings")
 
-      try fileManager.createDirectory(at: outputDirectoryURL, withIntermediateDirectories: true, attributes: [:])
+      let codeOutputFileURL = outputDirectoryURL
+        .appendingPathComponent("Strings.swift")
 
-      try stringsData.write(to: outputFileURL)
+      try fileManager.createDirectory(at: stringsOutputDirURL, withIntermediateDirectories: true, attributes: [:])
+
+      try stringsData.write(to: stringsOutputFileURL)
+      try codeData.write(to: codeOutputFileURL)
     } catch {
       print(error)
       exit(1)

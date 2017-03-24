@@ -67,5 +67,10 @@
     "l10n": {
       "Base": ""
     }
+  },
+  "myAge": {
+    "l10n": {
+      "Base": "I'm {{ age }} and {{ foo.bar }} or {{ apple_orange }} {{ car-var }}"
+    }
   }
 }

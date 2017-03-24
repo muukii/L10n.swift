@@ -15,5 +15,3 @@ release: clean
 
 gen_xcode:
 	@swift package generate-xcodeproj
-
-

@@ -43,7 +43,6 @@ final class Parser {
           let key = keys.joined(separator: ".")
           precondition(flattenArray[key] == nil, "\(key) is used twice.")
           flattenArray[key] = d
-          print("key", key, "value", d)
         } else {
           try _flatten(keys: keys + [dictionary.key], json: dictionary.value)
         }

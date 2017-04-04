@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Regex
 import Guitar
 
 #if os(macOS)

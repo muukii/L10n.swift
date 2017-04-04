@@ -67,12 +67,40 @@ let gen = Command(
       try stringsData.write(to: stringsOutputFileURL)
       try codeData.write(to: codeOutputFileURL)
     } catch {
-      print(error)
-      exit(1)
+      fatalError("\(error)")
     }
     
     print("Complete! \(target)")
-    
+}
+
+let ls = Command(
+  usage: "ls",
+  shortMessage: "Describe key, value",
+  longMessage: nil,
+  flags: [
+    Flag(shortName: "i", longName: "input", type: String.self, description: "input", required: true, inheritable: false),
+    ],
+  example: "",
+  parent: nil,
+  aliases: [],
+  deprecationStatus: .notDeprecated) { flags, a in
+
+    let input = (flags.get(name: "input", type: String.self)! as NSString).standardizingPath
+    guard let data = FileManager.default.contents(atPath: input) else {
+      fatalError("Not found file: \(input)")
+    }
+
+    do {
+      let parser = Parser()
+      let result = try parser.run(jsonData: data)
+
+      result.forEach { o in
+        print(o.key)
+      }
+
+    } catch {
+      fatalError("\(error)")
+    }
 }
 
 let find = Command(
@@ -108,6 +136,7 @@ let add = Command(
 }
 
 root.add(subCommand: gen)
+root.add(subCommand: ls)
 root.add(subCommand: find)
 
 root.execute()

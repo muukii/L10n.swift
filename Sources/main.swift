@@ -22,8 +22,8 @@ let gen = Command(
   deprecationStatus: .notDeprecated) { (flags, args) in
 
     // standardizingPath : ~/ => /Users/Foo/
-    let input = (flags.get(name: "input", type: String.self)! as NSString).standardizingPath
-    let output = (flags.get(name: "output", type: String.self)! as NSString).standardizingPath
+    let input = flags.get(name: "input", type: String.self)!.standardizingPath
+    let output = flags.get(name: "output", type: String.self)!.standardizingPath
     let target = flags.get(name: "target", type: String.self)!
     let prefix = flags.get(name: "prefix", type: String.self) ?? ""
     let debug = flags.get(name: "debug", type: Bool.self) ?? false
@@ -85,7 +85,7 @@ let ls = Command(
   aliases: [],
   deprecationStatus: .notDeprecated) { flags, a in
 
-    let input = (flags.get(name: "input", type: String.self)! as NSString).standardizingPath
+    let input = flags.get(name: "input", type: String.self)!.standardizingPath
     guard let data = FileManager.default.contents(atPath: input) else {
       fatalError("Not found file: \(input)")
     }
@@ -124,19 +124,53 @@ let add = Command(
   shortMessage: "add L10n",
   longMessage: nil,
   flags: [
-    Flag(shortName: "p", longName: "path", type: String.self, description: "json path", required: true, inheritable: false),
+    Flag(shortName: "i", longName: "input", type: String.self, description: "input json path", required: true, inheritable: false),
     ],
   example: "",
   parent: nil,
   aliases: [],
-  deprecationStatus: .notDeprecated) { f, a in
+  deprecationStatus: .notDeprecated) { flags, a in
 
-    let rootPath = f.get(name: "path", type: String.self)!
-    print(FileManager.default.walk(rootPath: rootPath))
+    let input = flags.get(name: "input", type: String.self)!.standardizingPath
+    guard let data = FileManager.default.contents(atPath: input) else {
+      fatalError("Not found file: \(input)")
+    }
+
+    let key = a[0]
+    let value = a[1]
+
+    let root = (try! JSONSerialization.jsonObject(with: data, options: []) as! NSDictionary).mutableCopy() as! NSMutableDictionary
+
+    func append(key: String, value: String) {
+      let tokens = key.components(separatedBy: ".")
+
+      var _root = root
+
+      for key in tokens.dropLast() {
+
+        if _root[key] == nil {
+          _root[key] = NSMutableDictionary()
+        }
+
+        _root = (_root[key] as! NSDictionary).mutableCopy() as! NSMutableDictionary
+      }
+
+      if _root[tokens.last!] is NSDictionary {
+        fatalError("already exist")
+      }
+      
+      _root[tokens.last!] = value
+    }
+
+    append(key: key, value: value)
+
+    let outputData = try! JSONSerialization.data(withJSONObject: root, options: [.prettyPrinted])
+    print(String(data: outputData, encoding: .utf8)!)
 }
 
 root.add(subCommand: gen)
 root.add(subCommand: ls)
+root.add(subCommand: add)
 root.add(subCommand: find)
 
 root.execute()

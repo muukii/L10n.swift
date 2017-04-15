@@ -64,7 +64,7 @@ final class CodeGenerator {
       "    var text = template",
       "    for arg in args {",
       "      let format = \"{{ \\(arg.key) }}\"",
-      "      assert(text.range(of: format) != nil, \"Not found key : \\(arg.key)\")",
+//      "      assert(text.range(of: format) != nil, \"Not found key : \\(arg.key)\")",
       "      text = text.replacingOccurrences(of: format, with: arg.value.description)",
       "    }",
       "    self = text",
@@ -76,6 +76,7 @@ final class CodeGenerator {
       ]
 
     l.append("private class BundleClass {}")
+    l.append("")
     
     let result = l.joined(separator: "\n")
     print(result)

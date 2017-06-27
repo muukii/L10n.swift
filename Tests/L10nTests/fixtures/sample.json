@@ -1,76 +1,22 @@
 {
-  "a" : {
-    "a" : {
-      "l10n": {
-        "Base": "a.a"
-      }
-    },
-    "b" : {
-      "l10n": {
-        "Base": "a.b"
-      }
-    },
-    "c" : {
-      "a" : {
-        "l10n": {
-          "Base": "a.c.a"
-        }
-      },
-      "b" : {
-        "l10n": {
-          "Base": "a.c.b"
-        }
-      },
-      "c" : {
-        "a" : {
-          "l10n": {
-            "Base": "a.c.c.a"
-          }
-        }
-      },
-      "d" : {
-        "l10n": {
-          "Base": "a.c.d"
-        }
-      }
-    },
-    "d" : {
-      "l10n": {
-        "Base": "a.d"
-      }
-    },
-    "e" : {
-      "a" : {
-        "a" : {
-          "a" : {
-            "a" : {
-              "l10n": {
-                "Base": "a.e.a.a.a.a"
-              }
-            }
-          }
-        }
-      }
-    }
+  "configuration" : {
+    "languages" : ["Base", "zh-Hant"]
   },
-  "b" : {
-    "l10n": {
-      "Base": "b"
-    }
-  },
-    "b" : {
-    "l10n": {
-      "Base": "b"
-    }
-  },
-  "empty" : {
-    "l10n": {
-      "Base": ""
-    }
-  },
-  "myAge": {
-    "l10n": {
-      "Base": "I'm {{ age }} and {{ foo.bar }} or {{ apple_orange }} {{ car-var }}"
+  "strings" : {
+    "interestCount" : {
+      "id" : "a",
+      "Base" : "{{ count }}件",
+      "zh-Hant" : "{{ count }}件"
+    },
+    "myAge": {
+      "id" : "b",
+      "Base": "I'm {{ age }} and {{ foo.bar }} or {{ apple_orange }} {{ car-var }}",
+      "zh-Hant": "I'm {{ age }} and {{ foo.bar }} or {{ apple_orange }} {{ car-var }}"
+    },
+    "interestCount" : {
+      "id" : "c",
+      "Base" : "{{ count }}件",
+      "zh-Hant" : "{{ count }}件"
     }
   }
 }

@@ -19,7 +19,9 @@ final class CodeGenerator {
 
   }
 
-  func run(strings: [String : [String : String]], target: String) throws -> Data {
+  func run(source: Source) throws -> Data {
+    
+    let set = source.strings.sortedStringSet()
 
     var l: [String] = []
 
@@ -27,23 +29,33 @@ final class CodeGenerator {
     l.append("import AppFoundation")    
     l.append("")
     l.append("enum L10n {")
-    strings.forEach { key, value in
-
-      let value = value["Base"]!
-
-      l.append("  /// \(value)")
-      l.append("  case \(key.camelCased())\(genCase(source: value))")
+    
+    set.forEach { args in
+      
+      let key = args.key
+      
+      let _v = args.value.strings.first!.value
+      
+      for (lang, str) in args.value.strings {
+        l.append("  /// \(lang) : \(str)")
+      }
+      
+      l.append("  case \(key.camelCased())\(genCase(source: _v))")
     }
     l.append("}")
     l.append("extension L10n: CustomStringConvertible {")
     l.append("  var description: String { return self.string }")
     l.append("  var string: String {")
     l.append("    switch self {")
-    strings.forEach { key, value in
-      let value = value["Base"]!
-      l.append("    case .\(key.camelCased())\(genSwitch(source: value)):")
+    set.forEach { args in
+      
+      let key = args.key
+      
+      let _v = args.value.strings.first!.value
+      
+      l.append("    case .\(key.camelCased())\(genSwitch(source: _v)):")
       l.append("      return L10n.tr(key: \"\(key)\")")
-      l.append(genAsTemplate(source: value))
+      l.append(genAsTemplate(source: _v))
     }
     l.append("    }")
     l.append("  }")
@@ -83,18 +95,18 @@ final class CodeGenerator {
     return result.data(using: .utf8)!
   }
 
-  func injectNames(source: String) -> [String] {
+  private func injectNames(source: String) -> [String] {
 
     let regex = try! RegularExpression(pattern: "\\{\\{\\s*(.+?)\\s*\\}\\}", options: [])
     let r = regex.matches(in: source, options: [], range: NSRange(location: 0, length: source.characters.count))
     let s = r.map { a in
-      (source as NSString).substring(with: a.rangeAt(1))
+      (source as NSString).substring(with: a.range(at: 1))
     }
 
     return s.map { $0.camelCased() }
   }
 
-  func genCase(source: String) -> String {
+  private func genCase(source: String) -> String {
 
     let names = injectNames(source: source)
 
@@ -110,7 +122,7 @@ final class CodeGenerator {
     return "(\(format))"
   }
 
-  func genSwitch(source: String) -> String {
+  private func genSwitch(source: String) -> String {
 
     let names = injectNames(source: source)
 
@@ -126,7 +138,7 @@ final class CodeGenerator {
     return "(\(format))"
   }
 
-  func genAsTemplate(source: String) -> String {
+  private func genAsTemplate(source: String) -> String {
 
     let s = injectNames(source: source).map {
       "                \"\($0)\" : \($0)"

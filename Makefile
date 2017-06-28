@@ -10,8 +10,8 @@ clean:
 run: build
 	@.build/debug/l10n
 
-release: clean
-	@swift build --configuration release
+release: 
+	@swift build -c release -Xswiftc -static-stdlib
 
 gen_xcode:
 	@swift package generate-xcodeproj

@@ -26,7 +26,6 @@ final class CodeGenerator {
     var l: [String] = []
 
     l.append("import Foundation")
-    l.append("import AppFoundation")    
     l.append("")
     l.append("public enum L10n {")
     

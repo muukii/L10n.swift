@@ -28,7 +28,7 @@ final class CodeGenerator {
     l.append("import Foundation")
     l.append("import AppFoundation")    
     l.append("")
-    l.append("enum L10n {")
+    l.append("public enum L10n {")
     
     set.forEach { args in
       
@@ -44,8 +44,8 @@ final class CodeGenerator {
     }
     l.append("}")
     l.append("extension L10n: CustomStringConvertible {")
-    l.append("  var description: String { return self.string }")
-    l.append("  var string: String {")
+    l.append("  public var description: String { return self.string }")
+    l.append("  public var string: String {")
     l.append("    switch self {")
     set.forEach { args in
       

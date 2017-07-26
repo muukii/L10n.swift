@@ -94,7 +94,7 @@ final class CodeGenerator {
     return result.data(using: .utf8)!
   }
 
-  private func injectNames(source: String) -> [String] {
+  private func injectNames(source: String) -> [(original: String, camelCased: String)] {
 
     let regex = try! RegularExpression(pattern: "\\{\\{\\s*(.+?)\\s*\\}\\}", options: [])
     let r = regex.matches(in: source, options: [], range: NSRange(location: 0, length: source.characters.count))
@@ -102,7 +102,7 @@ final class CodeGenerator {
       (source as NSString).substring(with: a.range(at: 1))
     }
 
-    return s.map { $0.camelCased() }
+    return s.map { ($0, $0.camelCased()) }
   }
 
   private func genCase(source: String) -> String {
@@ -114,7 +114,7 @@ final class CodeGenerator {
     }
 
     let format = names.map {
-      "\($0): String"
+      "\($0.camelCased): String"
     }
     .joined(separator: ", ")
 
@@ -130,7 +130,7 @@ final class CodeGenerator {
     }
 
     let format = names.map {
-      "let \($0)"
+      "let \($0.camelCased)"
       }
       .joined(separator: ", ")
 
@@ -140,7 +140,7 @@ final class CodeGenerator {
   private func genAsTemplate(source: String) -> String {
 
     let s = injectNames(source: source).map {
-      "                \"\($0)\" : \($0)"
+      "                \"\($0.original)\" : \($0.camelCased)"
     }
 
     guard s.isEmpty == false else {

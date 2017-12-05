@@ -1,5 +1,5 @@
 build:
-	@swift build 
+	@swift build -Xswiftc -static-stdlib
 
 install:
 	@mv .build/release/l10n /usr/local/bin/

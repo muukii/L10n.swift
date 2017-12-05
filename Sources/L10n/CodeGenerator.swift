@@ -30,7 +30,10 @@ final class CodeGenerator {
     l.append("public enum L10n {")
     
     set.forEach { args in
-      
+
+      l.append("")
+      l.append("  /// ID : \(args.value.id)")
+
       let key = args.key
       
       let _v = args.value.strings.first!.value
@@ -97,7 +100,7 @@ final class CodeGenerator {
   private func injectNames(source: String) -> [(original: String, camelCased: String)] {
 
     let regex = try! RegularExpression(pattern: "\\{\\{\\s*(.+?)\\s*\\}\\}", options: [])
-    let r = regex.matches(in: source, options: [], range: NSRange(location: 0, length: source.characters.count))
+    let r = regex.matches(in: source, options: [], range: NSRange(location: 0, length: source.count))
     let s = r.map { a in
       (source as NSString).substring(with: a.range(at: 1))
     }
